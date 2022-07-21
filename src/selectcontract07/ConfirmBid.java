@@ -108,7 +108,7 @@ public class ConfirmBid extends javax.swing.JDialog {
             }
         });
 
-        jButtonSave.setBackground(java.awt.Color.blue);
+        jButtonSave.setBackground(java.awt.Color.gray);
         jButtonSave.setText("Save");
         jButtonSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -116,7 +116,7 @@ public class ConfirmBid extends javax.swing.JDialog {
             }
         });
 
-        jButtonCancel.setBackground(java.awt.Color.blue);
+        jButtonCancel.setBackground(java.awt.Color.gray);
         jButtonCancel.setText("Cancel");
         jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

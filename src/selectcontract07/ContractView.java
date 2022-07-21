@@ -41,6 +41,7 @@ public class ContractView extends javax.swing.JFrame {
         jLabelContractCount = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuQuit = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuNewContract = new javax.swing.JMenuItem();
 
@@ -173,6 +174,10 @@ public class ContractView extends javax.swing.JFrame {
         );
 
         jMenu1.setText("File");
+
+        jMenuQuit.setText("Quit");
+        jMenu1.add(jMenuQuit);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Edit");
@@ -192,7 +197,7 @@ public class ContractView extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 22, Short.MAX_VALUE)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -211,9 +216,13 @@ public class ContractView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    void addMenuListener(ActionListener menu){
-       jMenuNewContract.addActionListener(menu);
+    void addMenuItemAddNewListener(ActionListener menuItem){
+       jMenuNewContract.addActionListener(menuItem);
     }
+    void addMenuItemQuitListener(ActionListener menuItem){
+       jMenuQuit.addActionListener(menuItem);
+    }
+       
     void addPrevListener(ActionListener listenForPrevButton){
         jPrevButton.addActionListener(listenForPrevButton);
     }
@@ -223,7 +232,6 @@ public class ContractView extends javax.swing.JFrame {
     void addBidListener(ActionListener listenForBidButton){
         jBidButton.addActionListener(listenForBidButton);
     }
-    
     void addComboBoxListener(ItemListener listenForComboBox){
         jComboOriginCity.addItemListener(listenForComboBox);
     }
@@ -288,6 +296,7 @@ public class ContractView extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuNewContract;
+    private javax.swing.JMenuItem jMenuQuit;
     private javax.swing.JButton jNextButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

@@ -5,7 +5,20 @@
  */
 package selectcontract07;
 
+import java.awt.Color;
+import java.awt.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -13,20 +26,41 @@ import javax.swing.JFrame;
  */
 public class NewContract extends javax.swing.JDialog {
 
-    /**
-     * Creates new form NewContract
-     */
+        private boolean contractIdIsValid;
+        private boolean orgCityIsValid;
+        private boolean destCityIsValid;
+        private boolean ordTypeIsValid;
+    
+    /** Creates new form NewContract */
     public NewContract(JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         
-        // Add New contract Code here.
+        // set all form validation to false.
+        contractIdIsValid = false;
+        orgCityIsValid = false;
+        destCityIsValid = false;
+        ordTypeIsValid = false;
         
+        // disable save button while validation false.
+        checkValid();
         
+        // These are the available origin and destination cities.
+        // "" empty string at index 0 for blank combobox list item
+        String[] cities = {"", "Victoria", "Vancouver", "Seattle", "Nanaimo", "Prince George"};
         
+        // set the items in Origin City combobox
+        setOriginCities(cities);
+        // set the items in the Destiation City combobox
+        setDestinationCities(cities);
+        // hide all the validation message labels.
+        setMsgVisible(false);
         
-        
-        
+        // set tool tips for each form input ( ? ).
+        jLabelTTContractID.setToolTipText("Enter a single Digit (1-9) followed by 3 letters");
+        jLabelTTOriginCity.setToolTipText("Select Origin City (Must be different from Destiation city)");
+        jLabelTTDestinationCity.setToolTipText("Select Destination City (Must be different from Origin city");
+        jLabelTTOrderType.setToolTipText("Enter an item type (no numbers or special characters.");
     }
 
     /**
@@ -43,12 +77,21 @@ public class NewContract extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonCancel = new javax.swing.JButton();
+        jButtonSave = new javax.swing.JButton();
         jTextFieldNewContractID = new javax.swing.JTextField();
-        jTextFieldNewOriginCIty = new javax.swing.JTextField();
-        jTextFieldNewDestinationCity = new javax.swing.JTextField();
         jTextFieldNewOrderType = new javax.swing.JTextField();
+        jButtonReset = new javax.swing.JButton();
+        jComboNewOriginCity = new javax.swing.JComboBox<>();
+        jComboNewDestinationCity = new javax.swing.JComboBox<>();
+        jLabelMsgContractID = new javax.swing.JLabel();
+        jLabelMsgOriginCity = new javax.swing.JLabel();
+        jLabelMsgDestCity = new javax.swing.JLabel();
+        jLabelMsgOrderType = new javax.swing.JLabel();
+        jLabelTTContractID = new javax.swing.JLabel();
+        jLabelTTOriginCity = new javax.swing.JLabel();
+        jLabelTTDestinationCity = new javax.swing.JLabel();
+        jLabelTTOrderType = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Add New Contract");
@@ -61,60 +104,159 @@ public class NewContract extends javax.swing.JDialog {
 
         jLabel7.setText("Order Type:");
 
-        jButton1.setText("Cancel");
+        jButtonCancel.setText("Cancel");
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Save");
+        jButtonSave.setText("Save");
+        jButtonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveActionPerformed(evt);
+            }
+        });
+
+        jTextFieldNewContractID.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldNewContractIDFocusLost(evt);
+            }
+        });
+
+        jTextFieldNewOrderType.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTextFieldNewOrderTypeFocusLost(evt);
+            }
+        });
+
+        jButtonReset.setText("Reset");
+        jButtonReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonResetActionPerformed(evt);
+            }
+        });
+
+        jComboNewOriginCity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboNewOriginCity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboNewOriginCityActionPerformed(evt);
+            }
+        });
+
+        jComboNewDestinationCity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboNewDestinationCity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboNewDestinationCityActionPerformed(evt);
+            }
+        });
+
+        jLabelMsgContractID.setForeground(java.awt.Color.gray);
+        jLabelMsgContractID.setText(" ");
+
+        jLabelMsgOriginCity.setForeground(java.awt.Color.gray);
+        jLabelMsgOriginCity.setText(" ");
+
+        jLabelMsgDestCity.setForeground(java.awt.Color.gray);
+        jLabelMsgDestCity.setText(" ");
+
+        jLabelMsgOrderType.setForeground(java.awt.Color.gray);
+        jLabelMsgOrderType.setText(" ");
+
+        jLabelTTContractID.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabelTTContractID.setForeground(java.awt.Color.blue);
+        jLabelTTContractID.setText("( ? )");
+
+        jLabelTTOriginCity.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabelTTOriginCity.setForeground(java.awt.Color.blue);
+        jLabelTTOriginCity.setText("( ? )");
+
+        jLabelTTDestinationCity.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabelTTDestinationCity.setForeground(java.awt.Color.blue);
+        jLabelTTDestinationCity.setText("( ? )");
+
+        jLabelTTOrderType.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabelTTOrderType.setForeground(java.awt.Color.blue);
+        jLabelTTOrderType.setText("( ? )");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonReset)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonSave)
+                        .addGap(11, 11, 11)
+                        .addComponent(jButtonCancel))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextFieldNewOrderType, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jTextFieldNewDestinationCity, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
-                                .addComponent(jTextFieldNewOriginCIty)
-                                .addComponent(jTextFieldNewContractID))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addGap(124, 124, 124)
-                        .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2)))
-                .addContainerGap(26, Short.MAX_VALUE))
+                            .addComponent(jLabelMsgOrderType, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelMsgContractID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelMsgOriginCity, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelMsgDestCity, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel1))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextFieldNewOrderType)
+                                    .addComponent(jTextFieldNewContractID)
+                                    .addComponent(jComboNewOriginCity, 0, 128, Short.MAX_VALUE)
+                                    .addComponent(jComboNewDestinationCity, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabelTTContractID)
+                        .addComponent(jLabelTTOriginCity))
+                    .addComponent(jLabelTTDestinationCity)
+                    .addComponent(jLabelTTOrderType))
+                .addGap(61, 61, 61))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextFieldNewContractID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldNewContractID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelTTContractID))
+                .addGap(12, 12, 12)
+                .addComponent(jLabelMsgContractID)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jTextFieldNewOriginCIty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jComboNewOriginCity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelTTOriginCity))
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelMsgOriginCity)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextFieldNewDestinationCity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboNewDestinationCity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelTTDestinationCity))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelMsgDestCity)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextFieldNewOrderType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldNewOrderType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelTTOrderType))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabelMsgOrderType)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jButtonCancel)
+                    .addComponent(jButtonSave)
+                    .addComponent(jButtonReset))
+                .addGap(0, 47, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -122,35 +264,316 @@ public class NewContract extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addGap(47, 47, 47)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(60, 60, 60)
+                .addGap(70, 70, 70)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // When Cancel Button Clicked
+    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+       dispose();
+    }//GEN-LAST:event_jButtonCancelActionPerformed
+
+    // When Reset Button Clicked
+    private void jButtonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResetActionPerformed
+        resetForm();
+    }//GEN-LAST:event_jButtonResetActionPerformed
+
+    private void resetForm(){
+        setMsgVisible(false);
+        jTextFieldNewContractID.setText("");
+        jComboNewOriginCity.setSelectedIndex(0);
+        jComboNewDestinationCity.setSelectedIndex(0);
+        jTextFieldNewOrderType.setText("");
+    }
+    // When Save Button Clicked
+    private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+
+        if (checkValid()){
+            System.out.println("All Valid");
+            writeToFile("src/selectcontract07/Contracts.txt");
+            
+        } else {
+            System.out.println("Not All Valid");
+            
+        }
+    }//GEN-LAST:event_jButtonSaveActionPerformed
+
+    private boolean checkValid(){   
+        boolean allValid = contractIdIsValid && orgCityIsValid && destCityIsValid && ordTypeIsValid;
+        if(!allValid) {
+            jButtonSave.setEnabled(false);
+        } else {
+            jButtonSave.setEnabled(true);
+        }
+        return allValid;
+    }
     
+    private boolean checkUniqueId(String id){
+        boolean idIsUnique = true;
+
+        String testId = id.toUpperCase();
+        
+         try {
+            String filename = "src/selectcontract07/contracts.txt";
+            FileReader fileReader = new FileReader(filename);
+            
+            // Always wrap FileRader in BufferedReader.
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+  
+            // While loop to read each line of the data file until end of file
+            while((line = bufferedReader.readLine()) != null){
+                
+                // Split the line containing contract information into contractId 
+                // elemnets in a String array named tokens
+                String currentId = line.split(",")[0];
+               
+                if (testId.equals(currentId)){
+                   idIsUnique = false;
+                }
+            }
+            // Always close files.
+            fileReader.close();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+       
+       return idIsUnique;
+
+    } // end checkUniqueId()
     
+    private void writeToFile(String filePath){
+        
+        String contractID;
+        String originCity;
+        String destCity;
+        String orderType;
+
+        contractID = jTextFieldNewContractID.getText();
+        originCity = jComboNewOriginCity.getSelectedItem().toString();
+        destCity = jComboNewDestinationCity.getSelectedItem().toString();
+        orderType= jTextFieldNewOrderType.getText();
+
+        String outPut = contractID + "," + originCity + "," + destCity + "," + orderType;
+        
+         // write the information to the file.
+        try {
+            File f = new File(filePath);
+            FileWriter fw = new FileWriter(f, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            // If file does not exist: create file, then write to that file.
+            if(f.createNewFile()){
+                bw.newLine();
+                bw.write(outPut);
+                bw.flush();
+                bw.close();
+            } else {
+            // file already exists: write to file.
+                bw.newLine();
+                bw.append(outPut);
+                bw.flush();
+                bw.close();
+                resetForm();
+                contractIdIsValid = false;
+                orgCityIsValid = false;
+                destCityIsValid = false;
+                ordTypeIsValid = false;
+                checkValid();
+                
+                //How to update the contracts list??
+                //Do i somehow call the contractmodel constructor??
+                //ContractModel();
+                
+                JOptionPane.showMessageDialog(null, "New Contract Added Successfuly: " + contractID + ", " + originCity + ", " + destCity + ", " + orderType + ".");
+            } // end else
+        } catch (Exception e){
+            System.out.println(e);
+        } // end catch    
+    } // end writeToFile()
+    
+    // Validation on when text input looses focus.
+    private void jTextFieldNewContractIDFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldNewContractIDFocusLost
+
+        String inpID;
+        String contractID;
+        inpID = jTextFieldNewContractID.getText();
+        
+        // Input must be 1 digit (1-9) followed by 3 letters (upper or lower case)
+        String regex = "[1-9][a-zA-Z]{3}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(inpID);
+        
+        jLabelMsgContractID.setVisible(false);
+
+        if(inpID.isEmpty()){ // if input is empty
+            contractIdIsValid = false;
+        } else if (!matcher.matches()){ // if input does not match regex
+            contractIdIsValid = false;
+            jLabelMsgContractID.setForeground(Color.red);
+            jLabelMsgContractID.setText("ID not formatted Correctly");
+            jLabelMsgContractID.setVisible(true);
+        } else if (!checkUniqueId(inpID)) {
+            contractIdIsValid = false;
+            jLabelMsgContractID.setForeground(Color.red);
+            jLabelMsgContractID.setText("ID Not Unique");
+            jLabelMsgContractID.setVisible(true);
+        } else { // if input correct
+            contractIdIsValid = true;
+            contractID = inpID.toUpperCase(); // convert all letters to uppercase.
+            jTextFieldNewContractID.setText(contractID);
+            jLabelMsgContractID.setForeground(Color.green);
+            jLabelMsgContractID.setText("Correct");
+            jLabelMsgContractID.setVisible(true);
+        }
+        checkValid();
+    }//GEN-LAST:event_jTextFieldNewContractIDFocusLost
+
+    // when combox is changed
+    private void jComboNewOriginCityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboNewOriginCityActionPerformed
+        // if value selected in Origin city combo box matches value of dest city combobx
+            // display error message
+            // reset combobox
+        
+        String originCity = jComboNewOriginCity.getSelectedItem().toString();
+        String destCity = jComboNewDestinationCity.getSelectedItem().toString();
+        
+        String errorMsg = "Origin and Destination City must not be the same.";
+        String successMsg = "Correct";
+        
+        jLabelMsgOriginCity.setVisible(false);
+        
+        if (jComboNewOriginCity.getSelectedIndex() == 0) {
+            System.out.println("You must select an origin city");
+        } else if (originCity.equals(destCity)) {
+            orgCityIsValid = false;
+            jComboNewOriginCity.setSelectedIndex(0);
+            jLabelMsgOriginCity.setForeground(Color.red);
+            jLabelMsgOriginCity.setText(errorMsg);
+            jLabelMsgOriginCity.setVisible(true);
+        } else {
+            orgCityIsValid = true;
+            jLabelMsgOriginCity.setForeground(Color.green);
+            jLabelMsgOriginCity.setText(successMsg);
+            jLabelMsgOriginCity.setVisible(true);
+        }
+        checkValid();
+    }//GEN-LAST:event_jComboNewOriginCityActionPerformed
+
+    private void jComboNewDestinationCityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboNewDestinationCityActionPerformed
+        
+        String destCity = jComboNewDestinationCity.getSelectedItem().toString();
+        String originCity = jComboNewOriginCity.getSelectedItem().toString();
+        
+        String errorMsg = "Origin and Destination City must not be the same.";
+        String successMsg = "Correct";
+        
+        jLabelMsgDestCity.setVisible(false);
+        
+        if (jComboNewDestinationCity.getSelectedIndex() == 0) {
+            System.out.println("You must select a destination city");
+        } else if (destCity.equals(originCity)) {
+            destCityIsValid = false;
+            jComboNewDestinationCity.setSelectedIndex(0);
+            jLabelMsgDestCity.setForeground(Color.red);
+            jLabelMsgDestCity.setText(errorMsg);
+            jLabelMsgDestCity.setVisible(true);
+        } else {
+            destCityIsValid = true;
+            jLabelMsgDestCity.setForeground(Color.green);
+            jLabelMsgDestCity.setText(successMsg);
+            jLabelMsgDestCity.setVisible(true);
+        }
+        checkValid();
+    }//GEN-LAST:event_jComboNewDestinationCityActionPerformed
+
+    private void jTextFieldNewOrderTypeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextFieldNewOrderTypeFocusLost
+        
+        
+        String inpOrderType;
+        String orderType;
+        inpOrderType = jTextFieldNewOrderType.getText();
+        
+
+        
+        // Input must be 1 or more words, no numbers or special characters
+        String regex = "^[a-zA-Z]+( [a-zA-Z]+)*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(inpOrderType);
+        
+        jLabelMsgOrderType.setVisible(false);
+
+        if(inpOrderType.isEmpty()){ // if input is empty
+            ordTypeIsValid = false;
+            //jLabelMsgOrderType.setForeground(Color.red);
+            //jLabelMsgOrderType.setText("You must enter a valid ID");
+            //jLabelMsgOrderType.setVisible(true);
+        }
+        
+        if (!matcher.matches()){ // if input does not match regex
+            ordTypeIsValid = false;
+            jLabelMsgOrderType.setForeground(Color.red);
+            jLabelMsgOrderType.setText("Order Item not Formatted Correctly");
+            jLabelMsgOrderType.setVisible(true);
+        } else { // if input correct
+            ordTypeIsValid = true;
+            jLabelMsgOrderType.setForeground(Color.green);
+            jLabelMsgOrderType.setText("Correct");
+            jLabelMsgOrderType.setVisible(true);
+        }
+             checkValid();
+    }//GEN-LAST:event_jTextFieldNewOrderTypeFocusLost
+
+
+    // Set the list items for Origin Cities
+    private void setOriginCities(String[] originCities){
+        final DefaultComboBoxModel model = new DefaultComboBoxModel(originCities);
+        this.jComboNewOriginCity.setModel(model);
+    }
+    // set the list items for Destination Cities
+    private void setDestinationCities(String[] destinationCities) {
+        final DefaultComboBoxModel model = new DefaultComboBoxModel(destinationCities);
+        this.jComboNewDestinationCity.setModel(model);
+    }
+    
+    // control visiblity of all form msg labels.
+    private void setMsgVisible(boolean val){
+        jLabelMsgContractID.setVisible(val);
+        jLabelMsgOriginCity.setVisible(val);
+        jLabelMsgDestCity.setVisible(val);
+        jLabelMsgOrderType.setVisible(val);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonCancel;
+    private javax.swing.JButton jButtonReset;
+    private javax.swing.JButton jButtonSave;
+    private javax.swing.JComboBox<String> jComboNewDestinationCity;
+    private javax.swing.JComboBox<String> jComboNewOriginCity;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelMsgContractID;
+    private javax.swing.JLabel jLabelMsgDestCity;
+    private javax.swing.JLabel jLabelMsgOrderType;
+    private javax.swing.JLabel jLabelMsgOriginCity;
+    private javax.swing.JLabel jLabelTTContractID;
+    private javax.swing.JLabel jLabelTTDestinationCity;
+    private javax.swing.JLabel jLabelTTOrderType;
+    private javax.swing.JLabel jLabelTTOriginCity;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField jTextFieldNewContractID;
-    private javax.swing.JTextField jTextFieldNewDestinationCity;
     private javax.swing.JTextField jTextFieldNewOrderType;
-    private javax.swing.JTextField jTextFieldNewOriginCIty;
     // End of variables declaration//GEN-END:variables
 }

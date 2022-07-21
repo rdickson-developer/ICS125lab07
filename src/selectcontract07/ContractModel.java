@@ -22,11 +22,10 @@ public class ContractModel {
     
     private ArrayList<Contract> theContractsAll;
     private SortedSet<String> originCityList;
-    
+      
     public ContractModel() {
         contractCounter = 0;
-        theContracts = new ArrayList<>();
-        
+        theContracts = new ArrayList<>();  
         originCityList = new TreeSet<>();
         
          try {
@@ -49,7 +48,7 @@ public class ContractModel {
                 String destCity = tokens[Contract.INDEX_OF_DEST_CITY];
                 String orderItem = tokens[Contract.INDEX_OF_ORDER_ITEM];
                 
-                // Construc a new contract object with the token information
+                // Construct a new contract object with the token information
                 Contract dataContract = new Contract(contractID
                 , originCity
                 , destCity
@@ -58,7 +57,7 @@ public class ContractModel {
                 // add this new contract object to the arraylist
                 theContracts.add(dataContract);
                 
-                originCityList.add(originCity);
+                originCityList.add(originCity);          
             }
             
             theContractsAll = new ArrayList<>(theContracts);
@@ -114,5 +113,5 @@ public class ContractModel {
             theContracts.removeIf(s -> !s.contains(city));
         }
         contractCounter = 0;
-    }
+    }  
 }

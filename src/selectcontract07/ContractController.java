@@ -25,7 +25,8 @@ class ContractController {
         this.theView.addPrevListener(new PrevButtonListener());
         this.theView.addBidListener(new BidButtonListener());
         this.theView.addNextListener(new NextButtonListener());
-        this.theView.addMenuListener(new MenuItemAddNewContractListener());
+        this.theView.addMenuItemAddNewListener(new MenuItemAddNewContractListener());
+        this.theView.addMenuItemQuitListener(new MenuItemQuitListener());
         
         this.theView.addComboBoxListener(new ComboListener());
         
@@ -33,7 +34,7 @@ class ContractController {
         setUpDisplay();
     }
     
-    private void setUpDisplay(){
+    public void setUpDisplay(){
         try {
             if(theModel.foundContracts()){
 
@@ -60,11 +61,20 @@ class ContractController {
         theView.updateContractViewPanel(theModel.getCurrentContractNum(),theModel.getContractCount());
     }
     
+    class MenuItemQuitListener implements ActionListener{
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //System.out.println("Quit clicked");
+            System.exit(0);
+        }
+    }
+    
     class MenuItemAddNewContractListener implements ActionListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            System.out.println("New Contract Menu Item clicked");
+            //System.out.println("New Contract Menu Item clicked");
             try{
                 NewContract nc;
                 nc = new NewContract(theView, true);
@@ -75,18 +85,9 @@ class ContractController {
                 System.out.println(ex);
                 theView.displayErrorMessage(
                 "Error: The numbers entered must be integers.");
-            } // end catch
-            
-        }
-        
-        
-        
-        
-        
-        
-    }
-    
-    
+            } // end catch 
+        } // end actionPerformed()
+    } // end class
     
     class PrevButtonListener implements ActionListener {
         @Override

@@ -15,13 +15,7 @@ public class SelectContract {
      */
     
     public static void main(String[] args) {
-        
-        String a = "abc";
-        String b = new String ("abc");
-        System.out.println(a==b);
-        
-        
-        
+
         ContractView theView = new ContractView();
         ContractModel theModel = new ContractModel();
         ContractController theController;
