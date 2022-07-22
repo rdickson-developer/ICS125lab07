@@ -18,6 +18,8 @@ public class SelectContract {
 
         ContractView theView = new ContractView();
         ContractModel theModel = new ContractModel();
+        //NewContract theContract = new NewContract(theView, true);
+
         ContractController theController;
         theController = new ContractController(theView, theModel);
         theView.setVisible(true);

@@ -24,6 +24,10 @@ public class ContractModel {
     private SortedSet<String> originCityList;
       
     public ContractModel() {
+        updateContracts();
+    }
+    
+    void updateContracts() {
         contractCounter = 0;
         theContracts = new ArrayList<>();  
         originCityList = new TreeSet<>();

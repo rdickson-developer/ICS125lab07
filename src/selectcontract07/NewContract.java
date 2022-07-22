@@ -7,6 +7,7 @@ package selectcontract07;
 
 import java.awt.Color;
 import java.awt.List;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,11 +31,19 @@ public class NewContract extends javax.swing.JDialog {
         private boolean orgCityIsValid;
         private boolean destCityIsValid;
         private boolean ordTypeIsValid;
+        
+        private ContractModel theModel;
+
+
+       
     
     /** Creates new form NewContract */
     public NewContract(JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        this.theModel = theModel;
+
         
         // set all form validation to false.
         contractIdIsValid = false;
@@ -279,6 +288,12 @@ public class NewContract extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    // Add Save Button listener
+    void addSaveListener(ActionListener listenForSaveButton){
+        jButtonSave.addActionListener(listenForSaveButton);
+    }
+
     // When Cancel Button Clicked
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
        dispose();
@@ -290,6 +305,16 @@ public class NewContract extends javax.swing.JDialog {
     }//GEN-LAST:event_jButtonResetActionPerformed
 
     private void resetForm(){
+        
+        // set all form validation to false.
+        contractIdIsValid = false;
+        orgCityIsValid = false;
+        destCityIsValid = false;
+        ordTypeIsValid = false;
+        
+        // disable save button while validation false.
+        checkValid();
+        
         setMsgVisible(false);
         jTextFieldNewContractID.setText("");
         jComboNewOriginCity.setSelectedIndex(0);
@@ -301,15 +326,16 @@ public class NewContract extends javax.swing.JDialog {
 
         if (checkValid()){
             System.out.println("All Valid");
-            writeToFile("src/selectcontract07/Contracts.txt");
-            
+            writeToFile("src/selectcontract07/Contracts.txt"); 
+            //theModel.updateContracts();
+            //parent.setUpDisplay();
         } else {
             System.out.println("Not All Valid");
             
         }
     }//GEN-LAST:event_jButtonSaveActionPerformed
 
-    private boolean checkValid(){   
+    public boolean checkValid(){   
         boolean allValid = contractIdIsValid && orgCityIsValid && destCityIsValid && ordTypeIsValid;
         if(!allValid) {
             jButtonSave.setEnabled(false);
@@ -353,7 +379,7 @@ public class NewContract extends javax.swing.JDialog {
 
     } // end checkUniqueId()
     
-    private void writeToFile(String filePath){
+    public void writeToFile(String filePath){
         
         String contractID;
         String originCity;

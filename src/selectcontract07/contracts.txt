@@ -5,3 +5,11 @@
 7PYT,Toronto, Paris, Art
 9YRQ,Montreal, London, Cheese
 0YR5,Montreal, London, Wine
+4RDT,Victoria,Vancouver,Shoes
+5JJJ,Victoria,Seattle,Wine
+6YYY,Nanaimo,Prince George,Cheese
+6MMM,Nanaimo,Prince George,Fish
+6HHH,Victoria,Vancouver,Shoes
+6YYT,Victoria,Vancouver,Cheese
+7III,Victoria,Seattle,Shoes
+7LLL,Victoria,Seattle,Shoes
